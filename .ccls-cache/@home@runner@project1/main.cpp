@@ -17,7 +17,6 @@ struct person {
   ourvector<int> nucleoC;
 };
 
-
 /* Helper function: parse Sequence
 INFO: Takes in: array of Database, full getline readin, and position in the
 database array
@@ -48,7 +47,6 @@ ourvector<ourvector<char>> parseSeq(string line) { // Returns parsed
   return tmp;
 }
 
-
 /** Helper function: parse Person
 INFO: Takes in: array of Database, full getline readin, and position in the
 database array
@@ -71,11 +69,9 @@ ourvector<int> parsePerson(
   return tmpC;
 }
 
-
 string parseName(string line) { // Returns the name
   return line.substr(0, line.find(','));
 }
-
 
 /**
 @define db_load
@@ -83,7 +79,8 @@ string parseName(string line) { // Returns the name
 readIn given text file
 parse information into person struct for each individual
 **/
-ourvector<person> db_load(string filename) { // returns person object to be pushed into vector array
+ourvector<person> db_load(
+    string filename) { // returns person object to be pushed into vector array
   string content;
   fstream readIn;
   int count = 0;
@@ -117,11 +114,9 @@ ourvector<person> db_load(string filename) { // returns person object to be push
   return personVec;
 }
 
-
 void display(ourvector<ourvector<person>> db) {
-	cout << "Display: \n" << flush;
-  for (int i = 0; i < db[0][0].nucleo.size();
-       i++) { // prints out the nucleo types
+  cout << "Display: \n" << flush;
+  for (int i = 0; i < db[0][0].nucleo.size(); i++) { // prints out the nucleo types
     for (int j = 0; j < db[0][0].nucleo[i].size(); j++) {
       cout << db[0][0].nucleo[i][j];
     }
@@ -137,31 +132,26 @@ void display(ourvector<ourvector<person>> db) {
   }
 }
 
-
-bool validFile(string filename){
-	/*Info:
-	Read's through the directory of .txt files
-	Checks if filename is valid
-	return(t/f)*/
-	
-}//Needs completion
-
+bool validFile(string filename) {
+  /*Info:
+  Read's through the directory of .txt files
+  Checks if filename is valid
+  return(t/f)*/
+  return true;
+} // Needs completion
 
 void dnaDisplay(ourvector<ourvector<char>> dna) {
   cout << "----------DNA Sequence----------" << endl;
-  for(auto& ch : dna[0])
-	{
-		cout << ch;
-	}
-	cout << endl;
+  for (auto &ch : dna[0]) {
+    cout << ch;
+  }
+  cout << endl;
 }
-
 
 ourvector<char> load_dna(string filename) {
   /*Built to take in file names, for testing will load in the entire file
    * contents*/
   fstream readIn;
-  stringstream ss;
   string line;
   ourvector<char> tmpStr;
 
@@ -176,17 +166,55 @@ ourvector<char> load_dna(string filename) {
       tmpStr.push_back(ch);
     }
   }
-	cout << "\n----------DNA Print-out----------\n" << flush;
+  /*cout << "\n----------DNA Print-out----------\n" << flush;
+
+  for (auto &ch : tmpStr)
+    cout << ch;
+  cout << endl;
+*/	
+	readIn.close();
 	
-	for(auto& ch : tmpStr)
-		cout << ch;
-	cout << endl;
   return tmpStr;
 }
 
+
+void tmpDNADisplay(ourvector<char> print){
+	for(auto& ch : print)
+		cout << ch;
+}
+/*
+
+*/
+void processDna(ourvector<ourvector<char>> dnaBase, ourvector<ourvector<person>> db) {
+	int dbS = db[0][0].nucleo.size();//Count of elements to be searching for
+  int dbSize, chSize, inc;
+	
+	ourvector<char> sSearch = dnaBase[0];//Sequence search
+	person tmpP = db[0][0];
+	cout << dbS << " Searching for: \n";
+
+	for(int row = 0; row < tmpP.nucleo.size(); row++){
+		for(int col = 0; col < tmpP.nucleo[row].size(); col++){
+			cout << tmpP.nucleo[row][col] << flush;
+		}
+		cout << endl;
+	}
+	
+	cout << "\nSearching...\n" << flush;
+	for(int i = 0; i < dnaBase[0].size(); i++){
+		cout << dnaBase[0][i] << flush;
+	}
+	cout << endl;
+	
+	
+	cout << endl;//end of searcing print out
+}
+
 int main() {
-  ourvector<ourvector<person>> database; // A vector holding a vector, containing person objects
-  ourvector<ourvector<char>> dnaBase; // DNA database, a vector hold a vector, full load of one file
+  ourvector<ourvector<person>>
+      database; // A vector holding a vector, containing person objects
+  ourvector<ourvector<char>>
+      dnaBase; // DNA database, a vector hold a vector, full load of one file
   string command, file;
   bool abort = false;
 
@@ -204,7 +232,12 @@ int main() {
       database.push_back(db_load("large.txt"));
     } else if (command == "b") {
       dnaBase.push_back(load_dna("1.txt"));
-    } else if (command == "#") {
+			processDna(dnaBase, database);
+    }else if(command == "testing"){
+			database.push_back(db_load("small.txt"));
+			dnaBase.push_back(load_dna("1.txt"));
+			processDna(dnaBase, database);
+		} else if (command == "#") {
       break;
     } else if (command == "d") {
       display(database);
@@ -223,7 +256,8 @@ int main() {
 
 /*// Ref:
 // Struct:
-// https://stackoverflow.com/questions/7671719/creating-multiple-objects-for-classes-structures/7671753
+//
+https://stackoverflow.com/questions/7671719/creating-multiple-objects-for-classes-structures/7671753
 //
 // clear && rm -f program.exe && g++ -g -std=c++11 -Wall main.cpp -o program.exe
 // && ./program.exe
@@ -235,8 +269,8 @@ Load in all data at onces.
         Load in all dna files
 
 Load large vs small
-	When entered, loads all file's in range
-		-Range: 
-			1-4: Small
-			5-20: large
+        When entered, loads all file's in range
+                -Range:
+                        1-4: Small
+                        5-20: large
 */
