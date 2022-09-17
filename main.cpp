@@ -17,10 +17,25 @@ struct person {
   ourvector<int> nucleoC;
 };
 
+
+void print2dVec(ourvector<ourvector<char>> dna) {
+  cout << "----------DNA Sequence----------" << endl;
+  for (auto &ch : dna[0]) {
+    cout << ch;
+  }
+  cout << endl;
+}
+
+
+void printVec(ourvector<char> print){
+	for(auto& ch : print)
+		cout << ch;
+}
+
+
 /* Helper function: parse Sequence
 INFO: Takes in: array of Database, full getline readin, and position in the
 database array
-
 
 Used to parse out the top line of the database files
 --Only used to filter the top line of the file--
@@ -116,14 +131,14 @@ ourvector<person> db_load(
 
 void display(ourvector<ourvector<person>> db) {
   cout << "Display: \n" << flush;
-  for (int i = 0; i < db[0][0].nucleo.size(); i++) { // prints out the nucleo types
+  for (int i = 0; i < db[0][0].nucleo.size(); i++) {				 // prints out the nucleo types
     for (int j = 0; j < db[0][0].nucleo[i].size(); j++) {
       cout << db[0][0].nucleo[i][j];
     }
     cout << " ";
   }
   cout << endl;
-  for (int k = 0; k < 24; k++) { // Change 24 to the size of the internal array
+  for (int k = 0; k < 24; k++) { 															// Change 24 to the size of the internal array
     cout << db[0][k].name << flush;
     for (auto &nm : db[0][k].nucleoC) {
       cout << ", " << nm;
@@ -138,7 +153,7 @@ bool validFile(string filename) {
   Checks if filename is valid
   return(t/f)*/
   return true;
-} // Needs completion
+} 													// Needs completion
 
 
 ourvector<char> load_dna(string filename) {
@@ -148,42 +163,24 @@ ourvector<char> load_dna(string filename) {
   string line;
   ourvector<char> tmpStr;
 
-  readIn.open(filename); // Opens file
+  readIn.open(filename); 																			// Opens file
 
-  if (!readIn.is_open()) // Checks if readIn is good
+  if (!readIn.is_open()){ 																		// Checks if readIn is good
     cout << "Failed DNA reading: -> " << filename << endl;
-
-  while (!readIn.eof()) { // Read in until end of file
+		return tmpStr;
+	}
+  while (!readIn.eof()) { 																		// Read in until end of file
     getline(readIn, line);
     for (auto &ch : line) {
       tmpStr.push_back(ch);
     }
   }
-  /*cout << "\n----------DNA Print-out----------\n" << flush;
-
-  for (auto &ch : tmpStr)
-    cout << ch;
-  cout << endl;
-*/	
 	readIn.close();
 	
   return tmpStr;
 }
 
 
-void print2dVec(ourvector<ourvector<char>> dna) {
-  cout << "----------DNA Sequence----------" << endl;
-  for (auto &ch : dna[0]) {
-    cout << ch;
-  }
-  cout << endl;
-}
-
-
-void printVec(ourvector<char> print){
-	for(auto& ch : print)
-		cout << ch;
-}
 /*
 Helper functions: 
 Parse single vec based on size, delim by " "
@@ -262,16 +259,16 @@ ourvector<int> parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
 */
 
 int parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
-	int occurance, occuranceTmp, sSize = sSearch.size(), dnaSize = parseDna.size();
+	int occurance = 0, occuranceTmp, sSize = sSearch.size(), dnaSize = parseDna.size();
 
-	for(int i = 0; i < dnaSize-sSize; i++){//No over flow, stops sSearch.size short stops
-		if(parseDna[i] == sSearch[0]){				//If current pos = first seaerch condition
-			for(int x = 0; x < sSize; x++){			//Increments to search size
+	for(int i = 0; i < dnaSize-sSize; i++){											//No over flow, stops sSearch.size short stops
+		if(parseDna[i] == sSearch[0]){														//If current pos = first seaerch condition
+			for(int x = 0; x < sSize; x++){													//Increments to search size
 				if(parseDna[i+x] == sSearch[x]){
-					occuranceTmp = 1;									//Accounts for one instance
+					occuranceTmp = 1;																		//Accounts for one instance
 				}else{
-					occuranceTmp = 0;									//Not a match
-					break;													//Breaks loop
+					occuranceTmp = 0;																		//Not a match
+					break;																							//Breaks loop
 				}
 			}
 			occurance += occuranceTmp;
@@ -283,9 +280,6 @@ int parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
 }
 
 void processDna(ourvector<ourvector<char>> dnaBase, ourvector<ourvector<person>> db) {
-	int dbS = db[0][0].nucleo.size();														//Count of elements to be searching for
-  int dbSize, chSize, inc, occuranceC;
-	
 	ourvector<char> sSearch;
 	ourvector<int> occurance;
 	person tmpP = db[0][0];
@@ -294,26 +288,17 @@ void processDna(ourvector<ourvector<char>> dnaBase, ourvector<ourvector<person>>
 		for(int col = 0; col < tmpP.nucleo[row].size(); col++){
 			sSearch.push_back(tmpP.nucleo[row][col]);								//sequence search temp for pass
 		}																												
-		occurance.push_back(parseDna(dnaBase[0], sSearch));					//Pass vec, and size of vec 	//Pass temp array to be delim, catch count, 
+	occurance.push_back(parseDna(dnaBase[0], sSearch));					//Pass vec, and size of vecPass temp array to be delim, catch count, 
 		sSearch.clear();																					//Clear sSearch
 		cout << endl;
 	}
-	
-	/*cout << "\nSearching...\n" << flush;
-	for(int i = 0; i < dnaBase[0].size(); i++){									//Remove later
-		cout << dnaBase[0][i] << flush;
-	}
-	cout << endl;*/
-	
-	
-	// cout << endl;//end of searcing print out
 }
 
 int main() {
   ourvector<ourvector<person>>
-      database; // A vector holding a vector, containing person objects
+      database; 																							// A vector holding a vector, containing person objects
   ourvector<ourvector<char>>
-      dnaBase; // DNA database, a vector hold a vector, full load of one file
+      dnaBase; 																								// DNA database, a vector hold a vector, full load of one file
   string command, file;
   bool abort = false;
 
@@ -327,14 +312,14 @@ int main() {
       database.push_back(db_load(file));
     } else if (command == "load_dna") {
 
-    } else if (command == "a") { // Remove testing purpose only
+    } else if (command == "a") { 															// Remove testing purpose only
       database.push_back(db_load("large.txt"));
     } else if (command == "b") {
       dnaBase.push_back(load_dna("1.txt"));
 			processDna(dnaBase, database);
     }else if(command == "testing"){
-			database.push_back(db_load("small.txt"));
-			dnaBase.push_back(load_dna("1.txt"));
+			database.push_back(db_load("large.txt"));
+			dnaBase.push_back(load_dna("14.txt"));
 			processDna(dnaBase, database);
 		} else if (command == "#") {
       break;
@@ -372,4 +357,12 @@ Load large vs small
                 -Range:
                         1-4: Small
                         5-20: large
+*/
+
+
+/* 
+Problems that need to be addressed
+	-Currently relooping the main isn't working
+	-Possible passing of arrays when looping occures
+	-!* Speicifc milestones need to be able todo error handling !!!Has not been implimented yet!!!!
 */
