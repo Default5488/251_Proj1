@@ -140,13 +140,6 @@ bool validFile(string filename) {
   return true;
 } // Needs completion
 
-void dnaDisplay(ourvector<ourvector<char>> dna) {
-  cout << "----------DNA Sequence----------" << endl;
-  for (auto &ch : dna[0]) {
-    cout << ch;
-  }
-  cout << endl;
-}
 
 ourvector<char> load_dna(string filename) {
   /*Built to take in file names, for testing will load in the entire file
@@ -178,7 +171,16 @@ ourvector<char> load_dna(string filename) {
 }
 
 
-void tmpDNADisplay(ourvector<char> print){
+void print2dVec(ourvector<ourvector<char>> dna) {
+  cout << "----------DNA Sequence----------" << endl;
+  for (auto &ch : dna[0]) {
+    cout << ch;
+  }
+  cout << endl;
+}
+
+
+void printVec(ourvector<char> print){
 	for(auto& ch : print)
 		cout << ch;
 }
@@ -201,91 +203,110 @@ Sequence count(vec<char> seq, vec<char> compare)
 			
 */
 
-/*
-Counts the number of occurances of the specified dna sequences
-*/
-int seqCount(ourvector<char> dna, ourvector<char> sSearch){
-	int occurance, occuranceTmp;
-	ourvector<char> comp; //Holds parsed dna
-	
-	for(auto& ch : dna){//Loop through all of dna
-		if(ch != " ")
+/* Potential Scrap
+int seqCount(ourvector<char> parsed, ourvector<char> sSearch){				//Maybe filter, for nll/none null vals in size?
+	int occurance = 0, occuranceTmp;
+	ourvector<char> comp; 																					//Holds parsed dna
+	cout << "\n----------Sequence Count----------\n" << flush;
+	for(auto& ch : parsed){																						//Loop through all of dna#
+		if(ch != ' '){
 			comp.push_back(ch);
-		else{							//When delim caught
-			//Compare elements
-			for(int i = 0; i < sSearch.size(); i++){//Ittrates throug size of sSearch
-				if(comp[i] == sSearch[i])
+		}else{																														//When delim caught
+			for(int i = 0; i < sSearch.size()-1; i++){										//Ittrates throug size of sSearch !! Potential problem, out-of-range by +1  ??
+				// cout << "cs: " << comp.size() << "ss: " << sSearch.size() << endl;
+				if(comp[i] == sSearch[i]){																	//Compare elements
+					cout << comp[i] << " : " << sSearch[i] << "\t" << flush;
 					occuranceTmp = 1;
-				else{//Not matching
+					}else{																											//Not matching
 					occuranceTmp = 0;
 					break;
 				}
 			}
-			occurance += occuranceTmp;
+			cout << endl;
+			comp.clear();																										//Reset for next sequence size
+			occurance = occurance + occuranceTmp;
+			// occuranceTmp = 0;																							// !! Might be redundent
 		}
-		comp.clear();			//Reset for next sequence size
 	}
 	cout << "\n----------Occurance Check----------\n" << flush;
 	cout << "sSearch: ";
-	for(int i =0; i < sSearch.size(); i==)
+	for(int i =0; i < sSearch.size(); i++)
 		cout << sSearch[i] << flush;
-	cout << "\nCount: " << occuranceTmp << endl;
+	cout << "\nCount: " << occurance << endl;
 	return occurance;
 }
-
+*/
 /*
 Could this return the int value of the count
 after parsing auto calls to the count function
 */
-ourvector<int> parseDna(ourvector<char> parse, int parseSize){
+
+/* Potential Scrap
+ourvector<int> parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
 	ourvector<char> parsed;
 	ourvector<int> seqOccurance;
-	int inc = 0; 
-	for(int i = 0; i < parse.size(); i++){//Loops through entire vector
-		if(!(i%parseSize==0))
-			parsed.push_back(parse[i]);				//Push char in
-		else
-			parsed.push_back(" ");					//enters delim character
-		//Pass to count function
-		seqOccurance.push_back(seqCount(parsed, parse)); //Pass current size seq for checking, and the comp
+	int parseSize = sSearch.size();
+	
+	for(int i = 0; i < parseDna.size(); i++){	//Loops through entire vector
+		if(i % parseSize == 0 && i != 0){
+			parsed.push_back(' ');								//Enters delim char
+		}
+		parsed.push_back(parseDna[i]);						//Needs to get pushed on after the space !! Not included we will have character loss //Pass to count function
 	}
+	cout << endl;
+	seqOccurance.push_back(seqCount(parsed, sSearch)); //Pass current size seq for checking, and the comp
+	tmpDNADisplay(parsed);
 	
-	
-	return parsed;
+	return seqOccurance;
+}
+*/
+
+int parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
+	int occurance, occuranceTmp, sSize = sSearch.size(), dnaSize = parseDna.size();
+
+	for(int i = 0; i < dnaSize-sSize; i++){//No over flow, stops sSearch.size short stops
+		if(parseDna[i] == sSearch[0]){				//If current pos = first seaerch condition
+			for(int x = 0; x < sSize; x++){			//Increments to search size
+				if(parseDna[i+x] == sSearch[x]){
+					occuranceTmp = 1;									//Accounts for one instance
+				}else{
+					occuranceTmp = 0;									//Not a match
+					break;													//Breaks loop
+				}
+			}
+			occurance += occuranceTmp;
+		}
+	}
+	 printVec(sSearch);
+		 cout << " :-: Occurances: " << occurance << endl;
+	return occurance;
 }
 
-
 void processDna(ourvector<ourvector<char>> dnaBase, ourvector<ourvector<person>> db) {
-	int dbS = db[0][0].nucleo.size();									//Count of elements to be searching for
+	int dbS = db[0][0].nucleo.size();														//Count of elements to be searching for
   int dbSize, chSize, inc, occuranceC;
 	
 	ourvector<char> sSearch;
 	ourvector<int> occurance;
 	person tmpP = db[0][0];
-	cout << dbS << " Searching for: \n";
 
-	for(int row = 0; row < tmpP.nucleo.size(); row++){	//Parse out search variables
+	for(int row = 0; row < tmpP.nucleo.size(); row++){					//Parse out search variables
 		for(int col = 0; col < tmpP.nucleo[row].size(); col++){
-			cout << tmpP.nucleo[row][col] << flush;
-			sSearch.push_back(tmpP.nucleo[row][col]);				//sequence search temp for pass
-		}
-		//Pass temp array to be delim
-		//Catch count
-		//push into count array
-		occuranceC.push_back(parseDna(sSearch, sSearch.size()));					//Pass vec, and size of vec
-		//Clear sSearch
-		sSearch.clear();
+			sSearch.push_back(tmpP.nucleo[row][col]);								//sequence search temp for pass
+		}																												
+		occurance.push_back(parseDna(dnaBase[0], sSearch));					//Pass vec, and size of vec 	//Pass temp array to be delim, catch count, 
+		sSearch.clear();																					//Clear sSearch
 		cout << endl;
 	}
 	
-	cout << "\nSearching...\n" << flush;
-	for(int i = 0; i < dnaBase[0].size(); i++){				//Remove later
+	/*cout << "\nSearching...\n" << flush;
+	for(int i = 0; i < dnaBase[0].size(); i++){									//Remove later
 		cout << dnaBase[0][i] << flush;
 	}
-	cout << endl;
+	cout << endl;*/
 	
 	
-	cout << endl;//end of searcing print out
+	// cout << endl;//end of searcing print out
 }
 
 int main() {
@@ -319,7 +340,7 @@ int main() {
       break;
     } else if (command == "d") {
       display(database);
-      dnaDisplay(dnaBase);
+      print2dVec(dnaBase);
     } else {
       cout << "load_db Not called.." << endl;
       abort = true;
