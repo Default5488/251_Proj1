@@ -25,6 +25,8 @@ bool validFile(string file){
 	checkFile.open(file);
 	if(checkFile)
 		return true;
+	else
+			cout << "Error: unable to open \'" << file << "\'" << endl;
 	return false;
 }
 
@@ -127,7 +129,7 @@ ourvector<person> db_load(string filename) { // returns person object to be push
   ourvector<person> personVec;
   person person;
 
-	cout << "Loading database..." << endl;
+	// cout << "Loading database..." << endl;
 	
   readIn.open(filename);
 
@@ -163,8 +165,6 @@ ourvector<char> dna_load(string filename) {
   fstream readIn;
   string line;
   ourvector<char> tmpStr;
-
-	cout << "Loading DNA..." << endl;
 	
   readIn.open(filename); 											// Opens file
 
@@ -185,8 +185,33 @@ ourvector<char> dna_load(string filename) {
 
 
 int parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
-	int occurance=0, occuranceTmp, sSize = sSearch.size(), dnaSize = parseDna.size();
+	int occurance=0, occuranceTmp, sSize = sSearch.size(), dnaSize = parseDna.size(), maxVal=1, pos=0;
 
+	for(int i = 0; i < (dnaSize-sSize); i++){//No overflow, stops sSearch.size short
+		if(parseDna[i] == sSearch[0]){//First match condition
+			for(int k = i; k < (dnaSize-sSize); k++){//Reads until end of sequences, or miss-match
+				if(parseDna[k] == sSearch[pos]){
+					occuranceTmp = 1;
+					pos++;
+				}else{
+					occuranceTmp = 0;
+					pos = 0;
+					break;
+				}
+				
+				if(pos == (sSize)){
+					// cout << "\t\t-> POS reset: " << pos << endl;
+					pos = 0;
+					occurance += occuranceTmp;
+				}
+			}
+		}//else cout << parseDna[i] << " != " << sSearch[0] << endl;
+		//if condition to set maxval
+		if(occurance > maxVal){
+			maxVal = occurance;
+		}else occurance = 0;
+	}
+	/*
 	for(int i = 0; i < dnaSize-sSize; i++){//No over flow, stops sSearch.size short stops
 		if(parseDna[i] == sSearch[0]){				//If current pos = first seaerch condition
 			for(int x = 0; x < sSize; x++){			//Increments to search size
@@ -196,14 +221,25 @@ int parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
 					occuranceTmp = 0;									//Not a match
 					break;													//Breaks loop
 				}
+				//If we compare to to a point after, if it doesn't match and set value to 1
+				//If value does set val max to = n
+				//checks if valmax is the largest
 			}
 			occurance += occuranceTmp;
+			//occurance happens in that itteration
+			//Testing code
+			//End testing code
+			//We have the inner loop run until the end or until miss-match
+			//We than check against largest count
+			//return largest count
 		}
-	}
+		//If occuanceTmp is zero, wasn't another match
+		//if it's one increment maxCount
+	}*/
 	 // printVec(sSearch);
 		 // cout << " :-: Occurances: " << occurance << endl;
 	
-	return occurance;
+	return maxVal;
 }
 
 
@@ -215,7 +251,7 @@ ourvector<int> processDna(ourvector<ourvector<char>> dnaBase, ourvector<ourvecto
 	for(int row = 0; row < tmpP.nucleo.size(); row++){					//Parse out search variables
 		for(int col = 0; col < tmpP.nucleo[row].size(); col++){
 			sSearch.push_back(tmpP.nucleo[row][col]);								//sequence search temp for pass
-		}																												
+		}
 		occurance.push_back(parseDna(dnaBase[0], sSearch));					//Pass vec, and size of vec 	//Pass temp array to be delim, catch count, 
 		// displayProcess(sSearch, occurance, row);
 		sSearch.clear();																					//Clear sSearch
@@ -229,28 +265,28 @@ void displayChoice(ourvector<ourvector<person>> db, ourvector<ourvector<char> > 
 	int dbSize = db.size();
 	int dnaSize = dna.size();
 	int occuranceSize = occurance.size();
-	if(validFile(file)){
-			if(dbSize != 0 && dnaSize == 0){				//Database has no content
-				displayDB(db);
-				cout << "No DNA loaded.\n" << endl;
-				cout << "No DNA has been processed." << endl;
-				
-				}else if(dbSize == 0 && dnaSize != 0){
-					cout << "No database loaded." << endl;
-					displayDna(dna);
-					cout << "No DNA has been processed." << endl;
-			}else if(dbSize != 0 && dnaSize != 0 && occuranceSize != 0){
-				displayDB(db);
-				displayDna(dna);
-				displayProcess(db, occurance);
-			}else{
-				displayDB(db);
-				displayDna(dna);
-				cout << "No DNA has been processed." << endl;
-			}
-		}else{
-			cout << "No database loaded." << endl << "No DNA loaded." << endl << "No DNA has been processed." << endl;
-		}
+	
+	if(dbSize != 0 && dnaSize == 0){				//Database has no content
+		displayDB(db);
+		cout << "No DNA loaded.\n" << endl;
+		cout << "No DNA has been processed." << endl;
+		
+		}else if(dbSize == 0 && dnaSize != 0){
+			cout << "No database loaded." << endl;
+			displayDna(dna);
+			cout << "No DNA has been processed." << endl;
+	}else if(dbSize != 0 && dnaSize != 0 && occuranceSize != 0){
+		displayDB(db);
+		displayDna(dna);
+		displayProcess(db, occurance);
+	}else if(dbSize != 0 && dnaSize != 0 && occuranceSize == 0){
+		displayDB(db);
+		displayDna(dna);
+		cout << "No DNA has been processed." << endl;
+	}else{
+		cout << "No database loaded." << endl << "No DNA loaded." << endl << "No DNA has been processed." << endl;
+	}
+		
 }
 
 
@@ -272,33 +308,37 @@ string search(ourvector<int>& occurance, ourvector<ourvector<person>> db){
 		if(matchedPerson != "")
 				return ("Found in database! DNA matches: " + matchedPerson);
 	}
-	return matchedPerson;
+	return ("Not found in databse");
 }
 
 
 int main() {
-  ourvector<ourvector<person>>
-      database; // A vector holding a vector, containing person objects
-  ourvector<ourvector<char>>
-      dnaBase; // DNA database, a vector hold a vector, full load of one file
+  ourvector<ourvector<person>> database; // A vector holding a vector, containing person objects
+  ourvector<ourvector<char>>dnaBase; // DNA database, a vector hold a vector, full load of one file
 	ourvector<int> occurance;
   string command, file, per;
 
   cout << "Welcome to the DNA Profiling Application." << endl;
   cout << "Enter command or # to exit:";
   cin >> command;
-  // cout << endl << "Loading database..." << endl;
+  
 
   while (true) {
     if (command == "load_db") {//Needs a vlid check
 			cin >> file;
-			database.clear();
-      database.push_back(db_load(file));
+			cout << "Loading database..." << endl;
+			if(validFile(file))
+				database.push_back(db_load(file));
+			else
+				database.clear();
 			
     } else if (command == "load_dna") {
 			cin >> file;
-			dnaBase.clear();
-			dnaBase.push_back(dna_load(file));
+			cout << "Loading DNA..." << endl;
+			if(validFile(file))
+				dnaBase.push_back(dna_load(file));
+			else
+				dnaBase.clear();
 
     }else if(command == "process"){
 			occurance.clear();
@@ -308,13 +348,7 @@ int main() {
 		}else if(command == "search"){
 			cout << search(occurance, database) << endl;
 			
-		}else if(command == "testing"){//Remove
-			database.push_back(db_load("small.txt"));
-			dnaBase.push_back(dna_load("1.txt"));
-			occurance = processDna(dnaBase, database);
-			per = search(occurance, database);
-			
-		} else if (command == "display") {
+		}else if (command == "display") {
 			displayChoice(database, dnaBase, occurance, file);
 			
     }else if(command == "clear"){

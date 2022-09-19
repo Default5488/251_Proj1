@@ -185,8 +185,33 @@ ourvector<char> dna_load(string filename) {
 
 
 int parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
-	int occurance=0, occuranceTmp, sSize = sSearch.size(), dnaSize = parseDna.size();
+	int occurance=0, occuranceTmp, sSize = sSearch.size(), dnaSize = parseDna.size(), maxVal=1, pos=0;
 
+	for(int i = 0; i < (dnaSize-sSize); i++){//No overflow, stops sSearch.size short
+		if(parseDna[i] == sSearch[0]){//First match condition
+			for(int k = i; k < (dnaSize-sSize); k++){//Reads until end of sequences, or miss-match
+				if(parseDna[k] == sSearch[pos]){
+					occuranceTmp = 1;
+					pos++;
+				}else{
+					occuranceTmp = 0;
+					pos = 0;
+					break;
+				}
+				
+				if(pos == (sSize)){
+					// cout << "\t\t-> POS reset: " << pos << endl;
+					pos = 0;
+					occurance += occuranceTmp;
+				}
+			}
+		}//else cout << parseDna[i] << " != " << sSearch[0] << endl;
+		//if condition to set maxval
+		if(occurance > maxVal){
+			maxVal = occurance;
+		}else occurance = 0;
+	}
+	/*
 	for(int i = 0; i < dnaSize-sSize; i++){//No over flow, stops sSearch.size short stops
 		if(parseDna[i] == sSearch[0]){				//If current pos = first seaerch condition
 			for(int x = 0; x < sSize; x++){			//Increments to search size
@@ -196,14 +221,25 @@ int parseDna(ourvector<char> parseDna, ourvector<char> sSearch){
 					occuranceTmp = 0;									//Not a match
 					break;													//Breaks loop
 				}
+				//If we compare to to a point after, if it doesn't match and set value to 1
+				//If value does set val max to = n
+				//checks if valmax is the largest
 			}
 			occurance += occuranceTmp;
+			//occurance happens in that itteration
+			//Testing code
+			//End testing code
+			//We have the inner loop run until the end or until miss-match
+			//We than check against largest count
+			//return largest count
 		}
-	}
+		//If occuanceTmp is zero, wasn't another match
+		//if it's one increment maxCount
+	}*/
 	 // printVec(sSearch);
 		 // cout << " :-: Occurances: " << occurance << endl;
 	
-	return occurance;
+	return maxVal;
 }
 
 
@@ -215,7 +251,7 @@ ourvector<int> processDna(ourvector<ourvector<char>> dnaBase, ourvector<ourvecto
 	for(int row = 0; row < tmpP.nucleo.size(); row++){					//Parse out search variables
 		for(int col = 0; col < tmpP.nucleo[row].size(); col++){
 			sSearch.push_back(tmpP.nucleo[row][col]);								//sequence search temp for pass
-		}																												
+		}
 		occurance.push_back(parseDna(dnaBase[0], sSearch));					//Pass vec, and size of vec 	//Pass temp array to be delim, catch count, 
 		// displayProcess(sSearch, occurance, row);
 		sSearch.clear();																					//Clear sSearch
@@ -271,10 +307,8 @@ string search(ourvector<int>& occurance, ourvector<ourvector<person>> db){
 		}
 		if(matchedPerson != "")
 				return ("Found in database! DNA matches: " + matchedPerson);
-		else
-			return ("Not found in database");
 	}
-	return matchedPerson;
+	return ("Not found in databse");
 }
 
 
