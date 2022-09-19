@@ -129,7 +129,7 @@ ourvector<person> db_load(string filename) { // returns person object to be push
   ourvector<person> personVec;
   person person;
 
-	cout << "Loading database..." << endl;
+	// cout << "Loading database..." << endl;
 	
   readIn.open(filename);
 
@@ -165,8 +165,6 @@ ourvector<char> dna_load(string filename) {
   fstream readIn;
   string line;
   ourvector<char> tmpStr;
-
-	cout << "Loading DNA..." << endl;
 	
   readIn.open(filename); 											// Opens file
 
@@ -273,6 +271,8 @@ string search(ourvector<int>& occurance, ourvector<ourvector<person>> db){
 		}
 		if(matchedPerson != "")
 				return ("Found in database! DNA matches: " + matchedPerson);
+		else
+			return ("Not found in database");
 	}
 	return matchedPerson;
 }
@@ -292,6 +292,7 @@ int main() {
   while (true) {
     if (command == "load_db") {//Needs a vlid check
 			cin >> file;
+			cout << "Loading database..." << endl;
 			if(validFile(file))
 				database.push_back(db_load(file));
 			else
@@ -299,6 +300,7 @@ int main() {
 			
     } else if (command == "load_dna") {
 			cin >> file;
+			cout << "Loading DNA..." << endl;
 			if(validFile(file))
 				dnaBase.push_back(dna_load(file));
 			else
